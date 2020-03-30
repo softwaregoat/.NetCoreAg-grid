@@ -1,0 +1,46 @@
+<body>
+  <app-nav-menu></app-nav-menu>
+  <div class="container">
+    <router-outlet></router-outlet>
+  </div>
+  <div class="container">
+    <div class="row text-right" >
+      <div class="col-8">
+
+      </div>
+      <div class="col-4">
+          <p>Current User : {{username}}</p>
+      </div>
+
+    </div>
+    <div class="row">
+      <div class="col-3">
+        <input placeholder="Filter..." (keyup)="onFilterTextBoxChanged($event)">
+      </div>
+      <div class="col-3">
+        <input type="file" (change)="onFileChange($event)" />
+        <div id="output"></div>
+      </div>
+      <div  class="col-3">
+        <button class="btn-primary rounded" (click)="onExportDataAsCSV()">Export as CSV</button>
+      </div>
+      <div class="col-3">
+        <button class="rounded" [style.background-color]="network ? 'turquoise': 'purple'">Online</button>
+        <button class="rounded" [style.background-color]="network ? 'purple': 'turquoise'">Offline</button>
+      </div>
+    </div>
+    <ag-grid-angular
+        #agGrid
+        style="height: 500px;"
+        class="ag-theme-alpine"
+        [rowData]="rowData"
+        [columnDefs]="columnDefs"
+        (gridReady)="onGridReady($event)"
+        rowSelection="multiple"
+        animateRows
+        pagination
+        >
+    </ag-grid-angular>
+  </div>
+
+</body>
