@@ -3,7 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {AgGridAngular} from 'ag-grid-angular';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
 import * as XLSX from 'xlsx';
-
+import { SwUpdate } from '@angular/service-worker';
 
 
 @Component({
@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
   private gridColumnApi;
   private params;
   network:boolean;
-  private username:string;
+  username:string;
   title = 'app';
   columnDefs = [
     {headerName: 'collper', field: 'collper', sortable: true, filter: true},
@@ -40,11 +40,15 @@ export class AppComponent implements OnInit {
   ];
 
   rowData: any;
-  constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string, private dbService: NgxIndexedDBService) {
+  constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string, private dbService: NgxIndexedDBService, updates: SwUpdate) {
         this.http.get(this.baseUrl + 'username').subscribe(result => {
           console.log('username', result);
           this.username = result[0];
         });
+        updates.available.subscribe(event => {
+          updates.activateUpdate().then(() => document.location.reload());
+        });
+
   }
   ngOnInit() {
 
@@ -70,10 +74,10 @@ export class AppComponent implements OnInit {
           console.log(rowData);
         } else {
           console.log('SampleDB is not ready');
-          setTimeout(function()
-          {
-             location.reload(false);
-          }, 1000);
+          // setTimeout(function()
+          // {
+          //    location.reload(false);
+          // }, 1000);
         }
       },
       error => {

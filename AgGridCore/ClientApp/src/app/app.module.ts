@@ -11,6 +11,8 @@ import {CounterComponent} from './counter/counter.component';
 import {FetchDataComponent} from './fetch-data/fetch-data.component';
 import {AgGridModule} from 'ag-grid-angular';
 import {NgxIndexedDBModule, DBConfig} from 'ngx-indexed-db';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 const dbConfig: DBConfig  = {
   name: 'MyDb',
@@ -59,7 +61,8 @@ const dbConfig: DBConfig  = {
       {path: '', component: HomeComponent, pathMatch: 'full'},
       {path: 'counter', component: CounterComponent},
       {path: 'fetch-data', component: FetchDataComponent},
-    ])
+    ]),
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [],
   bootstrap: [AppComponent]
