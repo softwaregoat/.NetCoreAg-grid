@@ -1,0 +1,53 @@
+<mat-horizontal-stepper  #stepper>
+  <mat-step [stepControl]="firstFormGroup">
+    <form [formGroup]="firstFormGroup">
+      <ng-template matStepLabel>Fill out your Preferred name</ng-template>
+      <div class="row">
+        <mat-form-field>
+          <mat-label>Collper</mat-label>
+          <input matInput placeholder="Collper" formControlName="collper" required>
+        </mat-form-field>
+      </div>
+      <div class="row">
+        <mat-form-field>
+          <mat-label>Psuix</mat-label>
+          <input matInput placeholder="psuix" formControlName="psuix" required>
+        </mat-form-field>
+      </div>
+      <div class="row">
+        <mat-form-field>
+          <mat-label>segid</mat-label>
+          <input matInput placeholder="segid" formControlName="segid" required>
+        </mat-form-field>
+      </div>
+      <div class="row">
+        <mat-label>Your material status:</mat-label>
+      </div>
+      <div class="row">
+        <mat-radio-group aria-label="Select an option"  formControlName="status" >
+          <mat-radio-button value="Single">Single</mat-radio-button>
+          <mat-radio-button value="Married">Married</mat-radio-button>
+        </mat-radio-group>
+      </div>
+      <div class="row">
+        <mat-form-field>
+          <mat-label>Your preferred Name</mat-label>
+          <input matInput placeholder="preferred Name" formControlName="preferred_name" required>
+        </mat-form-field>
+      </div>
+      <div>
+        <button mat-button matStepperNext (click)="nextStep()">Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step>
+    <ng-template matStepLabel>Done</ng-template>
+    <p>Thank you for {{prefferred_name}}. you have<br> completed the survery. Please click submit<br>button to send
+      the result to us</p>
+    <p>You can always go previous to <br>correct your responses</p>
+    <div>
+      <button mat-button matStepperPrevious>Previous</button>
+      <button mat-button (click)="doneSteps()">Submit</button>
+    </div>
+  </mat-step>
+</mat-horizontal-stepper>

@@ -1,25 +1,28 @@
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {AgGridAngular} from 'ag-grid-angular';
-import { NgxIndexedDBService } from 'ngx-indexed-db';
+import {NgxIndexedDBService} from 'ngx-indexed-db';
 import * as XLSX from 'xlsx';
-import { SwUpdate } from '@angular/service-worker';
-
-
+import {SwUpdate} from '@angular/service-worker';
+import { DialogBodyComponent} from './dialog-body/dialog-body.component';
+import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
   @ViewChild('agGrid', {read: true, static: false}) agGrid: AgGridAngular;
+  animal: string;
+  name: string;
   private gridApi;
   private gridColumnApi;
   private params;
-  network:boolean;
-  username:string;
+  selectedRow: DBController;
+  network: boolean;
+  username: string;
   title = 'app';
   columnDefs = [
-    {headerName: 'collper', field: 'collper', sortable: true, filter: true},
+    {headerName: 'collper', field: 'collper', sortable: true, filter: true, checkboxSelection: true},
     {headerName: 'psuix', field: 'psuix', sortable: true, filter: true},
     {headerName: 'segid', field: 'segid', sortable: true, filter: true},
     {headerName: 'scheD_OWNER_ID', field: 'scheD_OWNER_ID', sortable: true, filter: true},
@@ -38,21 +41,20 @@ export class AppComponent implements OnInit {
     {headerName: 'occname', field: 'occname', sortable: true, filter: true},
     {headerName: 'inttype', field: 'inttype', sortable: true, filter: true}
   ];
-
   rowData: any;
-  constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string, private dbService: NgxIndexedDBService, updates: SwUpdate) {
-        this.http.get(this.baseUrl + 'username').subscribe(result => {
-          console.log('username', result);
-          this.username = result[0];
-        });
-        updates.available.subscribe(event => {
-          updates.activateUpdate().then(() => document.location.reload());
-        });
+  constructor(public dialog: MatDialog, private http: HttpClient, @Inject('BASE_URL') private baseUrl: string, private dbService: NgxIndexedDBService, updates: SwUpdate) {
+    this.http.get(this.baseUrl + 'username').subscribe(result => {
+      this.username = result[0];
+    });
+    updates.available.subscribe(event => {
+      updates.activateUpdate().then(() => document.location.reload());
+    });
 
   }
+
   ngOnInit() {
 
-     this.http.get<DBController[]>(this.baseUrl + 'sampledata').subscribe(result => {
+    this.http.get<DBController[]>(this.baseUrl + 'sampledata').subscribe(result => {
       this.dbService.clear('SampleDB');
       for (let row of result) {
         this.dbService.add('SampleDB', row).then(
@@ -68,16 +70,11 @@ export class AppComponent implements OnInit {
     this.network = window.navigator.onLine;
     this.dbService.getAll('SampleDB').then(
       rowData => {
-        console.log(rowData, 'rowdata length');
-        if (rowData.length>0) {
+        if (rowData.length > 0) {
           this.rowData = rowData;
           console.log(rowData);
         } else {
           console.log('SampleDB is not ready');
-          // setTimeout(function()
-          // {
-          //    location.reload(false);
-          // }, 1000);
         }
       },
       error => {
@@ -95,18 +92,19 @@ export class AppComponent implements OnInit {
   onFilterTextBoxChanged(event: any) {
     this.gridApi.setQuickFilter(event.target.value);
   }
+
   onExportDataAsCSV() {
     this.gridApi.exportDataAsCsv(this.params);
   }
+
   onFileChange(ev) {
     let workBook = null;
-    let sht_name = null;
-    let jsonData = null;
+     let jsonData = null;
     const reader = new FileReader();
     const file = ev.target.files[0];
     reader.onload = (event) => {
       const data = reader.result;
-      workBook = XLSX.read(data, { type: 'binary' });
+      workBook = XLSX.read(data, {type: 'binary'});
       jsonData = workBook.SheetNames.reduce((initial, name) => {
         const sheet = workBook.Sheets[name];
         this.rowData = XLSX.utils.sheet_to_json(sheet);
@@ -119,14 +117,34 @@ export class AppComponent implements OnInit {
               console.log(error);
             }
           );
-      }
-        console.log('this.rowData', this.rowData);
+        }
         return initial;
       }, {});
     };
     reader.readAsBinaryString(file);
   }
-
+  openDialog(): void {
+    if (this.dialog.openDialogs.length > 0)
+    {
+      return;
+    }
+    let selectedNodes = null;
+    let selectedData = null;
+    selectedNodes = this.gridApi.getSelectedNodes();
+    selectedData = selectedNodes.map( function(node) { return node.data; });
+    this.selectedRow = selectedData;
+    console.log('selectedRow', this.selectedRow );
+    // collper = selectedData.map( function(node) { return node.collper; });
+    // psuix = selectedData.map( function(node) { return node.psuix; });
+    const dialogRef = this.dialog.open(DialogBodyComponent, {
+      // width: '250px',
+      data: this.selectedRow[0],
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      this.animal = result;
+    });
+  }
 }
 
 interface DBController {

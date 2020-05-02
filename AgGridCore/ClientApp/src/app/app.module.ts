@@ -3,7 +3,7 @@ import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import {RouterModule} from '@angular/router';
-
+import { MatDialogModule} from '@angular/material/dialog';
 import {AppComponent} from './app.component';
 import {NavMenuComponent} from './nav-menu/nav-menu.component';
 import {HomeComponent} from './home/home.component';
@@ -13,7 +13,15 @@ import {AgGridModule} from 'ag-grid-angular';
 import {NgxIndexedDBModule, DBConfig} from 'ngx-indexed-db';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
-
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DialogBodyComponent } from './dialog-body/dialog-body.component';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatStepperModule} from '@angular/material/stepper';
+import {ReactiveFormsModule } from '@angular/forms';
 const dbConfig: DBConfig  = {
   name: 'MyDb',
   version: 1,
@@ -40,7 +48,19 @@ const dbConfig: DBConfig  = {
       { name: 'occname', keypath: 'occname', options: { unique: false } },
       { name: 'inttype', keypath: 'inttype', options: { unique: false } }
     ]
-  }]
+  },
+    {
+    store: 'userResponses',
+    storeConfig: { keyPath: 'id', autoIncrement: true },
+    storeSchema: [
+      { name: 'collper', keypath: 'collper', options: { unique: false } },
+      { name: 'psuix', keypath: 'psuix', options: { unique: false } },
+      { name: 'segid', keypath: 'segid', options: { unique: false } },
+      { name: 'status', keypath: 'status', options: { unique: false } },
+      { name: 'preferred_name', keypath: 'preferred_name', options: { unique: false } }
+    ]
+  }
+  ]
 };
 
 @NgModule({
@@ -49,12 +69,21 @@ const dbConfig: DBConfig  = {
     NavMenuComponent,
     HomeComponent,
     CounterComponent,
-    FetchDataComponent
+    FetchDataComponent,
+    DialogBodyComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
     HttpClientModule,
+    MatDialogModule,
+    MatInputModule,
+    MatButtonModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatRadioModule,
+    MatStepperModule,
     FormsModule,
+    ReactiveFormsModule ,
     AgGridModule.withComponents([]),
     NgxIndexedDBModule.forRoot(dbConfig),
     RouterModule.forRoot([
@@ -62,10 +91,12 @@ const dbConfig: DBConfig  = {
       {path: 'counter', component: CounterComponent},
       {path: 'fetch-data', component: FetchDataComponent},
     ]),
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
+    BrowserAnimationsModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [DialogBodyComponent],
 })
 export class AppModule {
 }

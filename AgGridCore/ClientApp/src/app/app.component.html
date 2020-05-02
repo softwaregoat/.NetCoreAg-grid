@@ -36,11 +36,11 @@
         [rowData]="rowData"
         [columnDefs]="columnDefs"
         (gridReady)="onGridReady($event)"
-        rowSelection="multiple"
+        rowSelection="single"
         animateRows
         pagination
+        (rowClicked) ="openDialog()"
         >
     </ag-grid-angular>
   </div>
-
 </body>
