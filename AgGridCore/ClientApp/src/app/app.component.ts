@@ -12,8 +12,7 @@ import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog
 })
 export class AppComponent implements OnInit {
   @ViewChild('agGrid', {read: true, static: false}) agGrid: AgGridAngular;
-  animal: string;
-  name: string;
+  showing: boolean;
   private gridApi;
   private gridColumnApi;
   private params;
@@ -123,6 +122,9 @@ export class AppComponent implements OnInit {
     };
     reader.readAsBinaryString(file);
   }
+  selectRow(): void {
+    this.showing = true;
+  }
   openDialog(): void {
     if (this.dialog.openDialogs.length > 0)
     {
@@ -143,6 +145,7 @@ export class AppComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
       this.animal = result;
+      this.showing = false;
     });
   }
 }

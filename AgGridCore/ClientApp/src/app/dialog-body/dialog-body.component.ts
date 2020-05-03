@@ -2,26 +2,14 @@ import {Component, Inject} from '@angular/core';
 import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgxIndexedDBService} from 'ngx-indexed-db';
+import {HttpClient} from '@angular/common/http';
 
 export interface DialogData {
   collper: string;
   psuix: string;
   segid: string;
-  scheD_OWNER_ID: string;
-  lineid: any;
-  version: any;
-  fielD_COLLECTION_STATUS: string;
-  fG_NON_MONTHLY: string;
-  ofO_EA_ID: string;
-  utapt: string;
-  utcity: string;
-  utsena: string;
-  utseno: string;
-  utstate: string;
-  utzip: string;
-  linetype: any;
-  occname: string;
-  inttype: string;
+  status: string;
+  preferred_name: string;
 }
 
 @Component({
@@ -37,6 +25,7 @@ export class DialogBodyComponent {
     private _formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<DialogBodyComponent>,
     private dbService: NgxIndexedDBService,
+    private http: HttpClient, @Inject('BASE_URL') private baseUrl: string,
     @Inject(MAT_DIALOG_DATA) public data: DialogData) {
   }
 
@@ -56,17 +45,26 @@ export class DialogBodyComponent {
 
   nextStep(): void {
     this.prefferred_name = this.firstFormGroup.get('preferred_name').value;
+    this.data.preferred_name = this.prefferred_name;
+    this.data.status = this.firstFormGroup.get('status').value;
   }
-
   doneSteps(): void {
-    this.dbService.add('userResponses', this.firstFormGroup.value).then(
-      () => {
-        console.log('saved result', this.firstFormGroup.value);
-      },
-      error => {
-        console.log(error);
-      }
-    );
+    if (window.navigator.onLine) {
+      this.http.post(this.baseUrl + 'api/userresponse', this.firstFormGroup.value).subscribe(result => {
+        console.log('Post result', result);
+      });
+    }
+    else {
+      this.dbService.add('userResponses', this.firstFormGroup.value).then(
+        () => {
+          console.log('saved result', this.firstFormGroup.value);
+        },
+        error => {
+          console.log(error);
+        }
+      );
+    }
+
     this.dialogRef.close();
   }
 }

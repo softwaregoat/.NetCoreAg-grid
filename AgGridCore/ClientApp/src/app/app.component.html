@@ -27,6 +27,8 @@
       <div class="col-3">
         <button class="rounded" [style.background-color]="network ? 'turquoise': 'purple'">Online</button>
         <button class="rounded" [style.background-color]="network ? 'purple': 'turquoise'">Offline</button>
+        <button class="rounded btn-primary" [style.display]="showing ? 'block': 'none'" (click)="openDialog()">Begin
+          Survey</button>
       </div>
     </div>
     <ag-grid-angular
@@ -39,7 +41,7 @@
         rowSelection="single"
         animateRows
         pagination
-        (rowClicked) ="openDialog()"
+        (rowClicked) ="selectRow()"
         >
     </ag-grid-angular>
   </div>
