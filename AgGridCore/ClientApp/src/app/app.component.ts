@@ -125,6 +125,9 @@ export class AppComponent implements OnInit {
   selectRow(): void {
     this.showing = true;
   }
+  onSelectionChanged(): void {
+    this.showing = true;
+  }
   openDialog(): void {
     if (this.dialog.openDialogs.length > 0)
     {
@@ -144,7 +147,6 @@ export class AppComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
-      this.animal = result;
       this.showing = false;
     });
   }
